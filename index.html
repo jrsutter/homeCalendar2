@@ -116,7 +116,8 @@
 </div>
 
 <div class="tab-content calendar-content active">
-  <!-- Calendar content here (embed Google Calendar, agenda, etc.) -->
+  <!-- Embed Google Calendar -->
+  <iframe src="https://calendar.google.com/calendar/embed?src=your_calendar_id%40group.calendar.google.com&ctz=America%2FNew_York" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
 </div>
 
 <div class="tab-content chores-content">
@@ -147,6 +148,7 @@
   <div class="weather-info">
     <h2>Weather in Your Area</h2>
     <div id="currentWeather"></div>
+    <div class="weather-row" id="hourlyForecast"></div>
     <div class="weather-row" id="forecastRow"></div>
   </div>
 </div>
@@ -174,10 +176,11 @@
   const lon = 95.434769;
 
   function fetchWeather() {
-    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly&units=imperial&appid=${weatherApiKey}`)
+    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=imperial&appid=${weatherApiKey}`)
       .then(response => response.json())
       .then(data => {
         const currentWeather = data.current;
+        const hourlyForecast = data.hourly.slice(0, 4); // Next 12 hours (3-hour intervals)
         const forecast = data.daily;
 
         const currentTemp = currentWeather.temp;
@@ -190,7 +193,25 @@
           <img src="${currentIcon}" alt="Weather Icon" class="weather-icon">
         `;
 
-        // Populate 5-day forecast
+        // Hourly forecast (3-hour increments)
+        let hourlyHtml = '';
+        hourlyForecast.forEach(hour => {
+          const hourTime = new Date(hour.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const temp = hour.temp;
+          const iconUrl = `https://openweathermap.org/img/wn/${hour.weather[0].icon}@2x.png`;
+          
+          hourlyHtml += `
+            <div class="weather-card">
+              <div><strong>${hourTime}</strong></div>
+              <img class="weather-icon" src="${iconUrl}" alt="${hour.weather[0].description}">
+              <div><strong>Temp:</strong> ${temp}°F</div>
+            </div>
+          `;
+        });
+
+        document.getElementById('hourlyForecast').innerHTML = hourlyHtml;
+
+        // 5-day forecast
         let forecastHtml = '';
         forecast.forEach(day => {
           const dayName = new Date(day.dt * 1000).toLocaleString('en', { weekday: 'long' });
@@ -269,5 +290,6 @@
     renderChores();
   }
 </script>
+
 </body>
 </html>
