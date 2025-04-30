@@ -27,6 +27,11 @@
       gap: 20px;
     }
     iframe { width: 100%; border: none; height: 600px; }
+    img.weather-icon {
+      vertical-align: middle;
+      width: 40px;
+      height: 40px;
+    }
   </style>
 </head>
 <body>
@@ -66,9 +71,14 @@
     <button type="submit">Add Chore</button>
   </form>
 
+  <br/>
+  <button onclick="deleteSelectedChores()">Delete Selected</button>
+  <br/><br/>
+
   <table id="choreTable">
     <thead>
       <tr>
+        <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)"></th>
         <th>Person</th>
         <th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th>
         <th>Thursday</th><th>Friday</th><th>Saturday</th>
@@ -86,7 +96,6 @@
 </div>
 
 <script>
-  // Tab handling
   function showTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('nav div').forEach(d => d.classList.remove('active'));
@@ -95,7 +104,6 @@
   }
   document.querySelector('nav div').click();
 
-  // Chore logic
   document.getElementById('choreForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const name = document.getElementById('choreName').value;
@@ -103,18 +111,28 @@
     const days = Array.from(document.querySelectorAll('input[name="day"]:checked')).map(cb => cb.value);
 
     const row = document.createElement('tr');
-    row.innerHTML = `<td>${person}</td>` + ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(day => {
-      if (days.includes(day)) {
-        return `<td><label><input type="checkbox" onchange="this.nextSibling.style.textDecoration = this.checked ? 'line-through' : 'none'"><span>${name}</span></label></td>`;
-      } else {
-        return `<td></td>`;
-      }
-    }).join('');
+    row.innerHTML = `<td><input type="checkbox" class="delete-chore"></td><td>${person}</td>` +
+      ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(day => {
+        if (days.includes(day)) {
+          return `<td><label><input type="checkbox" onchange="this.nextSibling.style.textDecoration = this.checked ? 'line-through' : 'none'"><span>${name}</span></label></td>`;
+        } else {
+          return `<td></td>`;
+        }
+      }).join('');
     document.querySelector('#choreTable tbody').appendChild(row);
     this.reset();
   });
 
-  // Weather logic
+  function deleteSelectedChores() {
+    const checkboxes = document.querySelectorAll('.delete-chore:checked');
+    checkboxes.forEach(cb => cb.closest('tr').remove());
+  }
+
+  function toggleAll(master) {
+    const checkboxes = document.querySelectorAll('.delete-chore');
+    checkboxes.forEach(cb => cb.checked = master.checked);
+  }
+
   const apiKey = "a0df3a129b9aae7b8aab104f4eca575a";
   const lat = 30.214718, lon = -95.434769;
 
@@ -127,7 +145,9 @@
       let hourlyHTML = '<h4>Today (3-hr intervals)</h4><ul>';
       hourly.forEach(entry => {
         const time = new Date(entry.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        hourlyHTML += `<li>${time}: ${entry.main.temp}°F, ${entry.weather[0].description}, Rain: ${Math.round(entry.pop * 100)}%</li>`;
+        const icon = entry.weather[0].icon;
+        const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+        hourlyHTML += `<li><img class="weather-icon" src="${iconUrl}" alt="${entry.weather[0].description}"> ${time}: ${entry.main.temp}°F, ${entry.weather[0].description}, Rain: ${Math.round(entry.pop * 100)}%</li>`;
       });
       hourlyHTML += '</ul>';
       document.getElementById('hourly-weather').innerHTML = hourlyHTML;
@@ -140,7 +160,9 @@
       let dailyHTML = '<h4>Next 5 Days</h4><ul>';
       Object.values(daily).slice(0, 5).forEach(entry => {
         const date = new Date(entry.dt * 1000).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
-        dailyHTML += `<li>${date}: ${entry.main.temp}°F - ${entry.weather[0].description}, Rain: ${Math.round(entry.pop * 100)}%</li>`;
+        const icon = entry.weather[0].icon;
+        const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+        dailyHTML += `<li><img class="weather-icon" src="${iconUrl}" alt="${entry.weather[0].description}"> ${date}: ${entry.main.temp}°F - ${entry.weather[0].description}, Rain: ${Math.round(entry.pop * 100)}%</li>`;
       });
       dailyHTML += '</ul>';
       document.getElementById('daily-weather').innerHTML = dailyHTML;
