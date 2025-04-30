@@ -79,10 +79,13 @@
         <option value="Jarrett">Jarrett</option>
         <option value="Laurice">Laurice</option>
       </select>
-      <select id="chore-day">
-        <option>Sunday</option><option>Monday</option><option>Tuesday</option>
-        <option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option>
-      </select>
+      <label><input type="checkbox" name="days" value="Sunday"> Sun</label>
+      <label><input type="checkbox" name="days" value="Monday"> Mon</label>
+      <label><input type="checkbox" name="days" value="Tuesday"> Tue</label>
+      <label><input type="checkbox" name="days" value="Wednesday"> Wed</label>
+      <label><input type="checkbox" name="days" value="Thursday"> Thu</label>
+      <label><input type="checkbox" name="days" value="Friday"> Fri</label>
+      <label><input type="checkbox" name="days" value="Saturday"> Sat</label>
       <button type="submit">Add Chore</button>
     </form>
     <table id="chore-table">
@@ -120,7 +123,7 @@
       e.preventDefault();
       const name = document.getElementById('chore-name').value;
       const person = document.getElementById('chore-person').value;
-      const day = document.getElementById('chore-day').value;
+      const days = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(cb => cb.value);
 
       let row = document.querySelector(`#chore-body tr[data-person='${person}']`);
       if (!row) {
@@ -130,8 +133,10 @@
         document.getElementById('chore-body').appendChild(row);
       }
 
-      const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
-      row.cells[dayIndex + 1].innerHTML += `<div><input type="checkbox"> ${name}</div>`;
+      days.forEach(day => {
+        const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
+        row.cells[dayIndex + 1].innerHTML += `<div><input type="checkbox"> ${name}</div>`;
+      });
     }
 
     const apiKey = "a0df3a129b9aae7b8aab104f4eca575a";
@@ -158,6 +163,11 @@
         });
         dailyHTML += '</ul>';
         document.getElementById('daily-weather').innerHTML = dailyHTML;
+      })
+      .catch(error => {
+        document.getElementById('hourly-weather').innerText = 'Weather data failed to load.';
+        document.getElementById('daily-weather').innerText = '';
+        console.error('Weather fetch error:', error);
       });
   </script>
 </body>
