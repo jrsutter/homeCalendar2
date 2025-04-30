@@ -42,39 +42,15 @@
       display: block;
     }
 
-    /* Weather cards and forecast */
-    .weather-row {
+    /* Calendar Layout for two columns */
+    .calendar-content {
       display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      justify-content: space-around;
-      margin-top: 20px;
+      justify-content: space-between;
+      gap: 20px;
     }
 
-    .weather-card {
-      background: #2c3e50;
-      color: #f5f5f5;
-      border-radius: 10px;
-      padding: 14px;
-      text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-      flex: 1;
-      min-width: 160px;
-      max-width: 200px;
-    }
-
-    .weather-icon {
-      background: rgba(255,255,255,0.85);
-      border-radius: 50%;
-      padding: 6px;
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
-    }
-
-    .weather-card:hover {
-      transform: scale(1.05);
-      transition: 0.2s ease;
+    .calendar-column {
+      width: 48%;
     }
 
     /* Chores table */
@@ -95,16 +71,28 @@
       color: white;
     }
 
+    .assign-button {
+      background-color: #2c3e50;
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .assign-button:hover {
+      background-color: #34495e;
+    }
+
+    .assigned-person {
+      font-weight: bold;
+      color: #2ecc71;
+    }
+
     /* Other styles */
     .weather-info {
       text-align: center;
       margin-top: 20px;
     }
-
-    .task-input {
-      margin-bottom: 10px;
-    }
-
   </style>
 </head>
 <body>
@@ -116,8 +104,17 @@
 </div>
 
 <div class="tab-content calendar-content active">
-  <!-- Embed Google Calendar -->
-  <iframe src="https://calendar.google.com/calendar/embed?src=your_calendar_id%40group.calendar.google.com&ctz=America%2FNew_York" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+  <!-- Calendar Column 1 -->
+  <div class="calendar-column">
+    <!-- Embed your first calendar here -->
+    <iframe src=""https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FChicago&showPrint=0&showTitle=0&mode=AGENDA&src=amFycmV0dHN1dHRlckBnbWFpbC5jb20&src=Y2E3MDdkMTY5OTViZmU0NjdlMGMwYTlmYzQ3ZGUwYmZhYTBmYTVkOGUzMzJhOTZlNDRiNzI5MTBiZTdjYzUzZkBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=Y184YjVkOWFhN2UyOTM0YzZhMDBmMzBmODliY2ViODU0NzdiOTMwNWNmZTE3MWUxMGJlOWM4NzNjZDRkZjIzOWU4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&src=dHEzc2ZwaXQ4aW1qNGIwOGJ0YnFvY2NlNnF0dXI3MzlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=bGF1cmljZXN1dHRlckBnbWFpbC5jb20&color=%233F51B5&color=%23AD1457&color=%234285F4&color=%23009688&color=%237CB342&color=%239E69AF" style="border:solid 1px #777" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+  </div>
+
+  <!-- Calendar Column 2 -->
+  <div class="calendar-column">
+    <!-- Embed your second calendar here -->
+    <iframe src=""https://calendar.google.com/calendar/embed?height=600&wkst=1&ctz=America%2FChicago&showPrint=0&showTitle=0&src=amFycmV0dHN1dHRlckBnbWFpbC5jb20&src=Y2E3MDdkMTY5OTViZmU0NjdlMGMwYTlmYzQ3ZGUwYmZhYTBmYTVkOGUzMzJhOTZlNDRiNzI5MTBiZTdjYzUzZkBncm91cC5jYWxlbmRhci5nb29nbGUuY29t&src=Y184YjVkOWFhN2UyOTM0YzZhMDBmMzBmODliY2ViODU0NzdiOTMwNWNmZTE3MWUxMGJlOWM4NzNjZDRkZjIzOWU4QGdyb3VwLmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZW4udXNhI2hvbGlkYXlAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&src=dHEzc2ZwaXQ4aW1qNGIwOGJ0YnFvY2NlNnF0dXI3MzlAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=bGF1cmljZXN1dHRlckBnbWFpbC5jb20&color=%233F51B5&color=%23AD1457&color=%234285F4&color=%23009688&color=%237CB342&color=%239E69AF" style="border:solid 1px #777" width="100%" height="600" frameborder="0" scrolling="no"></iframe>
+  </div>
 </div>
 
 <div class="tab-content chores-content">
@@ -130,6 +127,7 @@
     <thead>
       <tr>
         <th>Chore</th>
+        <th>Assign</th>
         <th>Sunday</th>
         <th>Monday</th>
         <th>Tuesday</th>
@@ -251,6 +249,7 @@
     if (choreName.trim()) {
       const chore = {
         name: choreName,
+        assignedTo: null, // Will hold the name of the assigned person
         days: []
       };
       chores.push(chore);
@@ -266,6 +265,8 @@
       const row = document.createElement('tr');
       row.innerHTML = `
         <td>${chore.name}</td>
+        <td><button class="assign-button" onclick="assignChore(${index})">Assign</button></td>
+        <td>${chore.assignedTo ? `<span class="assigned-person">${chore.assignedTo}</span>` : 'Not Assigned'}</td>
         <td><input type="checkbox" onclick="toggleChore(${index}, 'sunday')"></td>
         <td><input type="checkbox" onclick="toggleChore(${index}, 'monday')"></td>
         <td><input type="checkbox" onclick="toggleChore(${index}, 'tuesday')"></td>
@@ -277,6 +278,16 @@
       `;
       tableBody.appendChild(row);
     });
+  }
+
+  function assignChore(index) {
+    const assignedPerson = prompt('Assign to (Jarrett or Laurice):');
+    if (assignedPerson && (assignedPerson.toLowerCase() === 'jarrett' || assignedPerson.toLowerCase() === 'laurice')) {
+      chores[index].assignedTo = assignedPerson.charAt(0).toUpperCase() + assignedPerson.slice(1); // Capitalize first letter
+      renderChores();
+    } else {
+      alert('Please choose either "Jarrett" or "Laurice".');
+    }
   }
 
   function toggleChore(index, day) {
