@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      background-color: #333;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      width: 100%;
+      background-color: #ddd;
+    }
+
+    .tab {
+      padding: 15px;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 20px;
+      width: 100%;
+    }
+
+    .active-tab {
+      background-color: #555;
+      color: white;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Calendar Layout */
+    .calendar-container {
+      display: flex;
+      width: 100%;
+    }
+
+    .calendar-column {
+      flex: 1;
+      margin-right: 10px;
+    }
+
+    /* Chores Section */
+    #chores-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    #chores-table th, #chores-table td {
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+
+    #chores-table button {
+      padding: 5px 10px;
+      background-color: green;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    #chores-table button:disabled {
+      background-color: grey;
+      cursor: not-allowed;
+    }
+
+    /* Weather Section */
+    #weather {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .weather-container {
+      padding: 20px;
+      max-width: 100%;
+    }
+
+    .weather-header {
+      margin-bottom: 20px;
+    }
+
+    .weather-details {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  Dashboard
+</header>
+
+<div class="tabs">
+  <div class="tab" onclick="switchTab(0)">Calendar</div>
+  <div class="tab" onclick="switchTab(1)">Weather</div>
+  <div class="tab" onclick="switchTab(2)">Chores</div>
+</div>
+
+<div id="calendar" class="tab-content active">
+  <div class="calendar-container">
+    <div class="calendar-column">
+      <h3>Daily Agenda</h3>
+      <iframe
+        src="https://calendar.google.com/calendar/embed?mode=AGENDA&showTitle=0&showPrint=0&showTabs=0&showCalendars=0&showTz=0&src=calendar1_id@group.calendar.google.com&src=calendar2_id@group.calendar.google.com&color=%23B1365F&color=%23182C57"
+        style="border: 0" width="100%" height="600" frameborder="0" scrolling="no">
+      </iframe>
+    </div>
+    <div class="calendar-column">
+      <h3>Month View</h3>
+      <iframe
+        src="https://calendar.google.com/calendar/embed?src=calendar1_id@group.calendar.google.com&mode=MONTH"
+        style="border: 0" width="100%" height="600" frameborder="0" scrolling="no">
+      </iframe>
+    </div>
+  </div>
+</div>
+
+<div id="weather" class="tab-content">
+  <div class="weather-container">
+    <div class="weather-header">
+      <h2>Weather for Current Location</h2>
+    </div>
+    <div class="weather-details">
+      <h3>Next 6 Hours:</h3>
+      <div id="hourly-weather"></div>
+      <h3>5-Day Forecast:</h3>
+      <div id="daily-weather"></div>
+    </div>
+  </div>
+</div>
+
+<div id="chores" class="tab-content">
+  <h2>Chores</h2>
+  <button onclick="showChoreModal()">Add New Chore</button>
+  <table id="chores-table">
+    <thead>
+      <tr>
+        <th>Person</th>
+        <th>Sunday</th>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+        <th>Saturday</th>
+        <th>Options</th>
+      </tr>
+    </thead>
+    <tbody id="chores-list">
+      <!-- Chore rows will be dynamically added here -->
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal for Adding New Chore -->
+<div id="choreModal" style="display:none;">
+  <div>
+    <label for="newChore">Chore Name:</label>
+    <input type="text" id="newChore" required>
+    <label for="day">Select Day:</label>
+    <select id="day">
+      <option value="Sunday">Sunday</option>
+      <option value="Monday">Monday</option>
+      <option value="Tuesday">Tuesday</option>
+      <option value="Wednesday">Wednesday</option>
+      <option value="Thursday">Thursday</option>
+      <option value="Friday">Friday</option>
+      <option value="Saturday">Saturday</option>
+    </select>
+    <button onclick="addChore()">Add Chore</button>
+  </div>
+</div>
+
+<script>
+  // Switch tabs functionality
+  function switchTab(index) {
+    const tabs = document.querySelectorAll('.tab-content');
+    const tabButtons = document.querySelectorAll('.tab');
+    tabs.forEach((tab, i) => {
+      tab.classList.remove('active');
+      tabButtons[i].classList.remove('active-tab');
+    });
+    tabs[index].classList.add('active');
+    tabButtons[index].classList.add('active-tab');
+  }
+
+  // Update the time every second
+  setInterval(function() {
+    const time = new Date();
+    const formattedTime = time.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true });
+    const formattedDate = time.toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    document.getElementById('time').innerHTML = formattedTime + " | " + formattedDate;
+  }, 1000);
+
+  // Weather data
+  fetch('https://api.openweathermap.org/data/2.5/onecall?lat=30.214718&lon=95.434769&units=imperial&appid=a0df3a129b9aae7b8aab104f4eca575a')
+    .then(response => response.json())
+    .then(data => {
+      const hourly = data.hourly.slice(0, 6); // Next 6 hours
+      const daily = data.daily.slice(0, 5); // Next 5 days
+
+      // Hourly weather updates
+      let hourlyHTML = "<ul>";
+      hourly.forEach((hour, index) => {
+        const time = new Date(hour.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        hourlyHTML += `<li>${time} - Temp: ${hour.temp}°F - Rain: ${hour.pop * 100}%</li>`;
+      });
+      hourlyHTML += "</ul>";
+      document.getElementById('hourly-weather').innerHTML = hourlyHTML;
+
+      // Daily forecast
+      let dailyHTML = "<ul>";
+      daily.forEach((day, i) => {
+        const date = new Date(day.dt * 1000).toLocaleDateString();
+        dailyHTML += `<li>${date} - Temp: Day ${day.temp.day}°F / Night ${day.temp.night}°F - ${day.weather[0].description} - Rain: ${day.pop * 100}%</li>`;
+      });
+      dailyHTML += "</ul>";
+      document.getElementById('daily-weather').innerHTML = dailyHTML;
+    });
+
+  // Add a chore to the table
+  function addChore() {
+    const choreName = document.getElementById('newChore').value;
+    const day = document.getElementById('day').value;
+
+    if (!choreName) {
+      alert("Please enter a chore name.");
+      return;
+    }
+
+    const tbody = document.getElementById('chores-list');
+    const newRow = document.createElement('tr');
+    
+    const personCell = document.createElement('td');
+    const personSelect = document.createElement('select');
+    personSelect.innerHTML = `<option>Jarrett</option><option>Laurice</option>`;
+    personCell.appendChild(personSelect);
+    
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    days.forEach(dayName => {
+      const dayCell = document.createElement('td');
+      if (dayName === day) {
+        const checkbox = document.createElement('input');
+        checkbox.type = "checkbox";
+        dayCell.appendChild(checkbox);
+      }
+      newRow.appendChild(dayCell);
+    });
+
+    const optionsCell = document.createElement('td');
+    const button = document.createElement('button');
+    button.innerText = "Mark Completed";
+    button.onclick = function () { markChoreComplete(button) };
+    optionsCell.appendChild(button);
+    
+    newRow.appendChild(personCell);
+    newRow.appendChild(optionsCell);
+    tbody.appendChild(newRow);
+
+    document.getElementById('choreModal').style.display = "none";
+  }
+
+  // Mark chore as completed
+  function markChoreComplete(button) {
+    const row = button.closest('tr');
+    const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = true;
+    });
+    button.disabled = true;
+  }
+</script>
+
+</body>
+</html>
