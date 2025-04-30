@@ -32,15 +32,27 @@
       gap: 16px;
       flex-wrap: wrap;
     }
-    .weather-card {
-      border: 1px solid #ccc;
-      padding: 12px;
-      text-align: center;
-      flex: 1;
-      min-width: 120px;
-      background: #f5f5f5;
-      border-radius: 8px;
-    }
+    .weather-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+ .weather-icon {
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  padding: 6px;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+    .weather-card:hover {
+  transform: scale(1.05);
+  transition: 0.2s ease;
+}
+    
     .weather-icon {
       width: 80px;
       height: 80px;
@@ -149,13 +161,26 @@
   const apiKey = "a0df3a129b9aae7b8aab104f4eca575a";
   const lat = 30.214718, lon = -95.434769;
 
-  fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
-    .then(res => res.json())
+  function fetchWeather() {
+  fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely&units=imperial&appid=${weatherApiKey}`)
+    .then(response => response.json())
     .then(data => {
-      const hourly = data.list.slice(0, 6);
-      const daily = {};
+      const currentWeather = data.current;
+      const forecast = data.daily;
+      const hourly = data.hourly.slice(0, 6);  // Get first 6 hours of forecast for today
 
-      let hourlyHTML = '<h4>Today (3-hr intervals)</h4><div class="weather-container">';
+      const currentTemp = currentWeather.temp;
+      const currentDescription = currentWeather.weather[0].description;
+      const currentIcon = `https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png`;
+
+      document.getElementById('currentWeather').innerHTML = `
+        <div><strong>Current Temp:</strong> ${currentTemp}°F</div>
+        <div><strong>Conditions:</strong> ${currentDescription}</div>
+        <img src="${currentIcon}" alt="Weather Icon" class="weather-icon">
+      `;
+
+      // Display 6 hour intervals for today
+      let hourlyHTML = '<h4>Today (3-hour intervals)</h4><div class="weather-container">';
       hourly.forEach(entry => {
         const time = new Date(entry.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const icon = entry.weather[0].icon;
@@ -164,11 +189,53 @@
           <div class="weather-card">
             <div>${time}</div>
             <img class="weather-icon" src="${iconUrl}" alt="${entry.weather[0].description}">
-            <div>${entry.main.temp}°F</div>
+            <div>${entry.temp}°F</div>
             <div>${entry.weather[0].description}</div>
             <div>Rain: ${Math.round(entry.pop * 100)}%</div>
           </div>`;
       });
+      hourlyHTML += '</div>';
+      document.getElementById('hourly-weather').innerHTML = hourlyHTML;
+
+      // Populate 5-day forecast with additional details
+      let forecastHtml = '';
+      forecast.forEach(day => {
+        const dayName = new Date(day.dt * 1000).toLocaleString('en', { weekday: 'long' });
+        const highTemp = day.temp.max;
+        const lowTemp = day.temp.min;
+        const windSpeed = day.wind_speed;
+        const rainChance = day.pop * 100;
+        const humidity = day.humidity;
+        const pressure = day.pressure;
+        const iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+
+        // Convert Unix timestamps for sunrise and sunset to human-readable format
+        const sunrise = new Date(day.sunrise * 1000).toLocaleTimeString();
+        const sunset = new Date(day.sunset * 1000).toLocaleTimeString();
+
+        forecastHtml += `
+          <div class="weather-card">
+            <div><strong>${dayName}</strong></div>
+            <img class="weather-icon" src="${iconUrl}" alt="${day.weather[0].description}">
+            <div><strong>High:</strong> ${highTemp}°F</div>
+            <div><strong>Low:</strong> ${lowTemp}°F</div>
+            <div><strong>Wind:</strong> ${windSpeed} mph</div>
+            <div><strong>Rain:</strong> ${rainChance}%</div>
+            <div><strong>Humidity:</strong> ${humidity}%</div>
+            <div><strong>Pressure:</strong> ${pressure} hPa</div>
+            <div><strong>Sunrise:</strong> ${sunrise}</div>
+            <div><strong>Sunset:</strong> ${sunset}</div>
+          </div>
+        `;
+      });
+
+      document.getElementById('forecastRow').innerHTML = forecastHtml;
+    })
+    .catch(error => {
+      console.log('Weather data failed to load', error);
+    });
+}
+
       hourlyHTML += '</div>';
       document.getElementById('hourly-weather').innerHTML = hourlyHTML;
 
