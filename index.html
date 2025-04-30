@@ -1,204 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar Chores Weather</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
   <style>
-    body { font-family: Arial; margin: 0; }
-    nav { display: flex; background: #333; }
-    nav div {
-      flex: 1;
+    /* General layout styles */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .tabs {
+      display: flex;
+      background-color: #2c3e50;
+      padding: 10px 0;
+      justify-content: space-around;
+    }
+
+    .tabs div {
+      color: #fff;
+      padding: 14px 30px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .tabs div.active {
+      background-color: #34495e;
+    }
+
+    .tab-content {
+      padding: 20px;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Weather cards and forecast */
+    .weather-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+
+    .weather-card {
+      background: #2c3e50;
+      color: #f5f5f5;
+      border-radius: 10px;
       padding: 14px;
       text-align: center;
-      cursor: pointer;
-      color: white;
-    }
-    nav div.active { background: #555; }
-    .tab-content { display: none; padding: 20px; }
-    .tab-content.active { display: block; }
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-      padding: 6px;
-    }
-    #calendar-container {
-      display: flex;
-      gap: 20px;
-    }
-    iframe { width: 100%; border: none; height: 600px; }
-    .weather-container {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .weather-card {
-      border: 1px solid #ccc;
-      padding: 12px;
-      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
       flex: 1;
-      min-width: 120px;
-      background: #f5f5f5;
-      border-radius: 8px;
+      min-width: 160px;
+      max-width: 200px;
     }
+
     .weather-icon {
+      background: rgba(255,255,255,0.85);
+      border-radius: 50%;
+      padding: 6px;
       width: 80px;
       height: 80px;
+      object-fit: contain;
     }
+
+    .weather-card:hover {
+      transform: scale(1.05);
+      transition: 0.2s ease;
+    }
+
+    /* Chores table */
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #34495e;
+      color: white;
+    }
+
+    /* Other styles */
+    .weather-info {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .task-input {
+      margin-bottom: 10px;
+    }
+
   </style>
 </head>
 <body>
 
-<h2 style="text-align:center">Dashboard</h2>
-<nav>
-  <div onclick="showTab('calendar')">Calendar</div>
-  <div onclick="showTab('chores')">Chores</div>
-  <div onclick="showTab('weather')">Weather</div>
-</nav>
-
-<div class="tab-content" id="calendar">
-  <h3>Calendar</h3>
-  <div id="calendar-container">
-    <iframe src="https://calendar.google.com/calendar/embed?src=your_agenda_calendar_id&mode=AGENDA&ctz=America%2FChicago"></iframe>
-    <iframe src="https://calendar.google.com/calendar/embed?src=your_month_calendar_id&mode=MONTH&ctz=America%2FChicago"></iframe>
-  </div>
+<div class="tabs">
+  <div class="tab" data-tab="calendar">Calendar</div>
+  <div class="tab" data-tab="chores">Chores</div>
+  <div class="tab" data-tab="weather">Weather</div>
 </div>
 
-<div class="tab-content" id="chores">
-  <h3>Chores</h3>
-  <form id="choreForm">
-    Chore Name: <input type="text" id="choreName" required />
-    Person:
-    <select id="chorePerson">
-      <option>Jarrett</option>
-      <option>Laurice</option>
-    </select>
-    Days:
-    <label><input type="checkbox" name="day" value="Sunday">Su</label>
-    <label><input type="checkbox" name="day" value="Monday">Mo</label>
-    <label><input type="checkbox" name="day" value="Tuesday">Tu</label>
-    <label><input type="checkbox" name="day" value="Wednesday">We</label>
-    <label><input type="checkbox" name="day" value="Thursday">Th</label>
-    <label><input type="checkbox" name="day" value="Friday">Fr</label>
-    <label><input type="checkbox" name="day" value="Saturday">Sa</label>
-    <button type="submit">Add Chore</button>
-  </form>
+<div class="tab-content calendar-content active">
+  <!-- Calendar content here (embed Google Calendar, agenda, etc.) -->
+</div>
 
-  <br/>
-  <button onclick="deleteSelectedChores()">Delete Selected</button>
-  <br/><br/>
-
-  <table id="choreTable">
+<div class="tab-content chores-content">
+  <!-- Chores content: Add chore functionality and table for chore management -->
+  <div class="task-input">
+    <input type="text" id="choreName" placeholder="Enter new chore" />
+    <button onclick="addChore()">Add Chore</button>
+  </div>
+  <table id="choresTable">
     <thead>
       <tr>
-        <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)"></th>
-        <th>Person</th>
-        <th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th>
-        <th>Thursday</th><th>Friday</th><th>Saturday</th>
+        <th>Chore</th>
+        <th>Sunday</th>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+        <th>Saturday</th>
+        <th>Options</th>
       </tr>
     </thead>
     <tbody></tbody>
   </table>
 </div>
 
-<div class="tab-content" id="weather">
-  <h3>Weather</h3>
-  <div id="hourly-weather"></div>
-  <hr/>
-  <div id="daily-weather"></div>
+<div class="tab-content weather-content">
+  <div class="weather-info">
+    <h2>Weather in Your Area</h2>
+    <div id="currentWeather"></div>
+    <div class="weather-row" id="forecastRow"></div>
+  </div>
 </div>
 
 <script>
-  function showTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('nav div').forEach(d => d.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
-  }
-  document.querySelector('nav div').click();
+  // Switch between tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
 
-  document.getElementById('choreForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const name = document.getElementById('choreName').value;
-    const person = document.getElementById('chorePerson').value;
-    const days = Array.from(document.querySelectorAll('input[name="day"]:checked')).map(cb => cb.value);
-
-    const row = document.createElement('tr');
-    row.innerHTML = `<td><input type="checkbox" class="delete-chore"></td><td>${person}</td>` +
-      ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(day => {
-        if (days.includes(day)) {
-          return `<td><label><input type="checkbox" onchange="this.nextSibling.style.textDecoration = this.checked ? 'line-through' : 'none'"><span>${name}</span></label></td>`;
-        } else {
-          return `<td></td>`;
+      const targetTab = tab.getAttribute('data-tab');
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+        if (content.classList.contains(`${targetTab}-content`)) {
+          content.classList.add('active');
         }
-      }).join('');
-    document.querySelector('#choreTable tbody').appendChild(row);
-    this.reset();
+      });
+    });
   });
 
-  function deleteSelectedChores() {
-    const checkboxes = document.querySelectorAll('.delete-chore:checked');
-    checkboxes.forEach(cb => cb.closest('tr').remove());
+  // Weather API call and display
+  const weatherApiKey = 'a0df3a129b9aae7b8aab104f4eca575a';
+  const lat = 30.214718;
+  const lon = 95.434769;
+
+  function fetchWeather() {
+    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly&units=imperial&appid=${weatherApiKey}`)
+      .then(response => response.json())
+      .then(data => {
+        const currentWeather = data.current;
+        const forecast = data.daily;
+
+        const currentTemp = currentWeather.temp;
+        const currentDescription = currentWeather.weather[0].description;
+        const currentIcon = `https://openweathermap.org/img/wn/${currentWeather.weather[0].icon}@2x.png`;
+
+        document.getElementById('currentWeather').innerHTML = `
+          <div><strong>Current Temp:</strong> ${currentTemp}°F</div>
+          <div><strong>Conditions:</strong> ${currentDescription}</div>
+          <img src="${currentIcon}" alt="Weather Icon" class="weather-icon">
+        `;
+
+        // Populate 5-day forecast
+        let forecastHtml = '';
+        forecast.forEach(day => {
+          const dayName = new Date(day.dt * 1000).toLocaleString('en', { weekday: 'long' });
+          const highTemp = day.temp.max;
+          const lowTemp = day.temp.min;
+          const windSpeed = day.wind_speed;
+          const rainChance = day.pop * 100;
+          const iconUrl = `https://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+
+          forecastHtml += `
+            <div class="weather-card">
+              <div><strong>${dayName}</strong></div>
+              <img class="weather-icon" src="${iconUrl}" alt="${day.weather[0].description}">
+              <div><strong>High:</strong> ${highTemp}°F</div>
+              <div><strong>Low:</strong> ${lowTemp}°F</div>
+              <div><strong>Wind:</strong> ${windSpeed} mph</div>
+              <div><strong>Rain:</strong> ${rainChance}%</div>
+            </div>
+          `;
+        });
+
+        document.getElementById('forecastRow').innerHTML = forecastHtml;
+      })
+      .catch(error => {
+        console.log('Weather data failed to load', error);
+      });
   }
 
-  function toggleAll(master) {
-    const checkboxes = document.querySelectorAll('.delete-chore');
-    checkboxes.forEach(cb => cb.checked = master.checked);
+  // Initial weather load
+  fetchWeather();
+
+  // Chore functionality
+  const chores = [];
+
+  function addChore() {
+    const choreName = document.getElementById('choreName').value;
+    if (choreName.trim()) {
+      const chore = {
+        name: choreName,
+        days: []
+      };
+      chores.push(chore);
+      renderChores();
+    }
+    document.getElementById('choreName').value = '';
   }
 
-  const apiKey = "a0df3a129b9aae7b8aab104f4eca575a";
-  const lat = 30.214718, lon = -95.434769;
-
-  fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
-    .then(res => res.json())
-    .then(data => {
-      const hourly = data.list.slice(0, 6);
-      const daily = {};
-
-      let hourlyHTML = '<h4>Today (3-hr intervals)</h4><div class="weather-container">';
-      hourly.forEach(entry => {
-        const time = new Date(entry.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const icon = entry.weather[0].icon;
-        const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
-        hourlyHTML += `
-          <div class="weather-card">
-            <div>${time}</div>
-            <img class="weather-icon" src="${iconUrl}" alt="${entry.weather[0].description}">
-            <div>${entry.main.temp}°F</div>
-            <div>${entry.weather[0].description}</div>
-            <div>Rain: ${Math.round(entry.pop * 100)}%</div>
-          </div>`;
-      });
-      hourlyHTML += '</div>';
-      document.getElementById('hourly-weather').innerHTML = hourlyHTML;
-
-      data.list.forEach(entry => {
-        const date = new Date(entry.dt * 1000).toLocaleDateString();
-        if (!daily[date]) daily[date] = entry;
-      });
-
-      let dailyHTML = '<h4>Next 5 Days</h4><div class="weather-container">';
-      Object.values(daily).slice(0, 5).forEach(entry => {
-        const date = new Date(entry.dt * 1000).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
-        const icon = entry.weather[0].icon;
-        const iconUrl = `https://openweathermap.org/img/wn/${icon}@2x.png`;
-        dailyHTML += `
-          <div class="weather-card">
-            <div>${date}</div>
-            <img class="weather-icon" src="${iconUrl}" alt="${entry.weather[0].description}">
-            <div>${entry.main.temp}°F</div>
-            <div>${entry.weather[0].description}</div>
-            <div>Rain: ${Math.round(entry.pop * 100)}%</div>
-          </div>`;
-      });
-      dailyHTML += '</div>';
-      document.getElementById('daily-weather').innerHTML = dailyHTML;
-    })
-    .catch(err => {
-      document.getElementById('hourly-weather').innerText = "Weather data failed to load.";
-      console.error(err);
+  function renderChores() {
+    const tableBody = document.querySelector('#choresTable tbody');
+    tableBody.innerHTML = '';
+    chores.forEach((chore, index) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${chore.name}</td>
+        <td><input type="checkbox" onclick="toggleChore(${index}, 'sunday')"></td>
+        <td><input type="checkbox" onclick="toggleChore(${index}, 'monday')"></td>
+        <td><input type="checkbox" onclick="toggleChore(${index}, 'tuesday')"></td>
+        <td><input type="checkbox" onclick="toggleChore(${index}, 'wednesday')"></td>
+        <td><input type="checkbox" onclick="toggleChore(${index}, 'thursday')"></td>
+        <td><input type="checkbox" onclick="toggleChore(${index}, 'friday')"></td>
+        <td><input type="checkbox" onclick="toggleChore(${index}, 'saturday')"></td>
+        <td><button onclick="deleteChore(${index})">Delete</button></td>
+      `;
+      tableBody.appendChild(row);
     });
-</script>
+  }
 
+  function toggleChore(index, day) {
+    chores[index].days.includes(day)
+      ? chores[index].days = chores[index].days.filter(d => d !== day)
+      : chores[index].days.push(day);
+  }
+
+  function deleteChore(index) {
+    chores.splice(index, 1);
+    renderChores();
+  }
+</script>
 </body>
 </html>
