@@ -2,173 +2,154 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-    .tabs {
-      display: flex;
-      background: #333;
-      color: white;
-    }
-    .tab-button {
+    body { font-family: Arial; margin: 0; }
+    nav { display: flex; background: #333; }
+    nav div {
       flex: 1;
-      padding: 15px;
+      padding: 14px;
       text-align: center;
       cursor: pointer;
-      background: #444;
+      color: white;
     }
-    .tab-button.active {
-      background: #666;
-    }
-    .tab-content {
-      display: none;
-      padding: 20px;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .calendar-container {
-      display: flex;
-      gap: 10px;
-    }
-    iframe {
-      border: none;
-    }
-    .chore-form input,
-    .chore-form select {
-      margin-right: 5px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    nav div.active { background: #555; }
+    .tab-content { display: none; padding: 20px; }
+    .tab-content.active { display: block; }
     table, th, td {
       border: 1px solid black;
+      border-collapse: collapse;
+      padding: 6px;
     }
-    th, td {
-      padding: 8px;
-      text-align: center;
+    #calendar-container {
+      display: flex;
+      gap: 20px;
     }
+    iframe { width: 100%; border: none; height: 600px; }
   </style>
 </head>
 <body>
-  <div class="tabs">
-    <div class="tab-button active" onclick="switchTab('calendar')">Calendar</div>
-    <div class="tab-button" onclick="switchTab('chores')">Chores</div>
-    <div class="tab-button" onclick="switchTab('weather')">Weather</div>
+
+<h2 style="text-align:center">Dashboard</h2>
+<nav>
+  <div onclick="showTab('calendar')">Calendar</div>
+  <div onclick="showTab('chores')">Chores</div>
+  <div onclick="showTab('weather')">Weather</div>
+</nav>
+
+<div class="tab-content" id="calendar">
+  <h3>Calendar</h3>
+  <div id="calendar-container">
+    <iframe src="https://calendar.google.com/calendar/embed?src=your_agenda_calendar_id&mode=AGENDA&ctz=America%2FChicago"></iframe>
+    <iframe src="https://calendar.google.com/calendar/embed?src=your_month_calendar_id&mode=MONTH&ctz=America%2FChicago"></iframe>
   </div>
+</div>
 
-  <div id="calendar" class="tab-content active">
-    <h2>Calendar</h2>
-    <div class="calendar-container">
-      <iframe src="https://calendar.google.com/calendar/embed?src=YOUR_AGENDA_VIEW_ID&mode=agenda" style="flex:1; height: 600px;"></iframe>
-      <iframe src="https://calendar.google.com/calendar/embed?src=YOUR_MONTH_VIEW_ID&mode=month" style="flex:1; height: 600px;"></iframe>
-    </div>
-  </div>
+<div class="tab-content" id="chores">
+  <h3>Chores</h3>
+  <form id="choreForm">
+    Chore Name: <input type="text" id="choreName" required />
+    Person:
+    <select id="chorePerson">
+      <option>Jarrett</option>
+      <option>Laurice</option>
+    </select>
+    Days:
+    <label><input type="checkbox" name="day" value="Sunday">Su</label>
+    <label><input type="checkbox" name="day" value="Monday">Mo</label>
+    <label><input type="checkbox" name="day" value="Tuesday">Tu</label>
+    <label><input type="checkbox" name="day" value="Wednesday">We</label>
+    <label><input type="checkbox" name="day" value="Thursday">Th</label>
+    <label><input type="checkbox" name="day" value="Friday">Fr</label>
+    <label><input type="checkbox" name="day" value="Saturday">Sa</label>
+    <button type="submit">Add Chore</button>
+  </form>
 
-  <div id="chores" class="tab-content">
-    <h2>Chores</h2>
-    <form class="chore-form" onsubmit="addChore(event)">
-      <input type="text" id="chore-name" placeholder="Chore name" required />
-      <select id="chore-person">
-        <option value="Jarrett">Jarrett</option>
-        <option value="Laurice">Laurice</option>
-      </select>
-      <label><input type="checkbox" name="days" value="Sunday"> Sun</label>
-      <label><input type="checkbox" name="days" value="Monday"> Mon</label>
-      <label><input type="checkbox" name="days" value="Tuesday"> Tue</label>
-      <label><input type="checkbox" name="days" value="Wednesday"> Wed</label>
-      <label><input type="checkbox" name="days" value="Thursday"> Thu</label>
-      <label><input type="checkbox" name="days" value="Friday"> Fri</label>
-      <label><input type="checkbox" name="days" value="Saturday"> Sat</label>
-      <button type="submit">Add Chore</button>
-    </form>
-    <table id="chore-table">
-      <thead>
-        <tr>
-          <th>Person</th>
-          <th>Sunday</th>
-          <th>Monday</th>
-          <th>Tuesday</th>
-          <th>Wednesday</th>
-          <th>Thursday</th>
-          <th>Friday</th>
-          <th>Saturday</th>
-        </tr>
-      </thead>
-      <tbody id="chore-body"></tbody>
-    </table>
-  </div>
+  <table id="choreTable">
+    <thead>
+      <tr>
+        <th>Person</th>
+        <th>Sunday</th><th>Monday</th><th>Tuesday</th><th>Wednesday</th>
+        <th>Thursday</th><th>Friday</th><th>Saturday</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-  <div id="weather" class="tab-content">
-    <h2>Weather</h2>
-    <div id="hourly-weather"></div>
-    <div id="daily-weather"></div>
-  </div>
+<div class="tab-content" id="weather">
+  <h3>Weather</h3>
+  <div id="hourly-weather"></div>
+  <hr/>
+  <div id="daily-weather"></div>
+</div>
 
-  <script>
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelector(`[onclick="switchTab('${tabId}')"]`).classList.add('active');
-      document.getElementById(tabId).classList.add('active');
-    }
+<script>
+  // Tab handling
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('nav div').forEach(d => d.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
+  }
+  document.querySelector('nav div').click();
 
-    function addChore(e) {
-      e.preventDefault();
-      const name = document.getElementById('chore-name').value;
-      const person = document.getElementById('chore-person').value;
-      const days = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(cb => cb.value);
+  // Chore logic
+  document.getElementById('choreForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = document.getElementById('choreName').value;
+    const person = document.getElementById('chorePerson').value;
+    const days = Array.from(document.querySelectorAll('input[name="day"]:checked')).map(cb => cb.value);
 
-      let row = document.querySelector(`#chore-body tr[data-person='${person}']`);
-      if (!row) {
-        row = document.createElement('tr');
-        row.setAttribute('data-person', person);
-        row.innerHTML = `<td>${person}</td>` + '<td></td>'.repeat(7);
-        document.getElementById('chore-body').appendChild(row);
+    const row = document.createElement('tr');
+    row.innerHTML = `<td>${person}</td>` + ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'].map(day => {
+      if (days.includes(day)) {
+        return `<td><label><input type="checkbox" onchange="this.nextSibling.style.textDecoration = this.checked ? 'line-through' : 'none'"><span>${name}</span></label></td>`;
+      } else {
+        return `<td></td>`;
       }
+    }).join('');
+    document.querySelector('#choreTable tbody').appendChild(row);
+    this.reset();
+  });
 
-      days.forEach(day => {
-        const dayIndex = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(day);
-        row.cells[dayIndex + 1].innerHTML += `<div><input type="checkbox"> ${name}</div>`;
+  // Weather logic
+  const apiKey = "a0df3a129b9aae7b8aab104f4eca575a";
+  const lat = 30.214718, lon = -95.434769;
+
+  fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
+    .then(res => res.json())
+    .then(data => {
+      const hourly = data.list.slice(0, 6);
+      const daily = {};
+
+      let hourlyHTML = '<h4>Today (3-hr intervals)</h4><ul>';
+      hourly.forEach(entry => {
+        const time = new Date(entry.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        hourlyHTML += `<li>${time}: ${entry.main.temp}°F, ${entry.weather[0].description}, Rain: ${Math.round(entry.pop * 100)}%</li>`;
       });
-    }
+      hourlyHTML += '</ul>';
+      document.getElementById('hourly-weather').innerHTML = hourlyHTML;
 
-    const apiKey = "a0df3a129b9aae7b8aab104f4eca575a";
-    const lat = 30.214718;
-    const lon = -95.434769;
-    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`)
-      .then(response => response.json())
-      .then(data => {
-        const hourly = data.hourly.slice(0, 6);
-        const daily = data.daily.slice(0, 5);
-
-        let hourlyHTML = '<h3>Next 6 Hours</h3><ul>';
-        hourly.forEach(hour => {
-          const time = new Date(hour.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          hourlyHTML += `<li>${time}: ${hour.temp}°F, Rain: ${Math.round(hour.pop * 100)}%</li>`;
-        });
-        hourlyHTML += '</ul>';
-        document.getElementById('hourly-weather').innerHTML = hourlyHTML;
-
-        let dailyHTML = '<h3>Next 5 Days</h3><ul>';
-        daily.forEach(day => {
-          const date = new Date(day.dt * 1000).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
-          dailyHTML += `<li>${date}: Day ${day.temp.day}°F / Night ${day.temp.night}°F - ${day.weather[0].description}, Rain: ${Math.round(day.pop * 100)}%</li>`;
-        });
-        dailyHTML += '</ul>';
-        document.getElementById('daily-weather').innerHTML = dailyHTML;
-      })
-      .catch(error => {
-        document.getElementById('hourly-weather').innerText = 'Weather data failed to load.';
-        document.getElementById('daily-weather').innerText = '';
-        console.error('Weather fetch error:', error);
+      data.list.forEach(entry => {
+        const date = new Date(entry.dt * 1000).toLocaleDateString();
+        if (!daily[date]) daily[date] = entry;
       });
-  </script>
+
+      let dailyHTML = '<h4>Next 5 Days</h4><ul>';
+      Object.values(daily).slice(0, 5).forEach(entry => {
+        const date = new Date(entry.dt * 1000).toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
+        dailyHTML += `<li>${date}: ${entry.main.temp}°F - ${entry.weather[0].description}, Rain: ${Math.round(entry.pop * 100)}%</li>`;
+      });
+      dailyHTML += '</ul>';
+      document.getElementById('daily-weather').innerHTML = dailyHTML;
+    })
+    .catch(err => {
+      document.getElementById('hourly-weather').innerText = "Weather data failed to load.";
+      console.error(err);
+    });
+</script>
+
 </body>
 </html>
